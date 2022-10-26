@@ -2167,11 +2167,7 @@
     "CriteriaList": [
       {
         "ConditionOccurrence": {
-          "CodesetId": 0,
-          "Age": {
-            "Value": 18,
-            "Op": "gte"
-          }
+          "CodesetId": 0
         }
       }
     ],

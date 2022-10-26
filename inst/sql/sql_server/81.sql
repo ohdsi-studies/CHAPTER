@@ -72,8 +72,8 @@ FROM
   FROM @cdm_database_schema.CONDITION_OCCURRENCE co
   JOIN #Codesets codesets on ((co.condition_concept_id = codesets.concept_id and codesets.codeset_id = 0))
 ) C
-JOIN @cdm_database_schema.PERSON P on C.person_id = P.person_id
-WHERE YEAR(C.condition_start_date) - P.year_of_birth < 18
+
+
 -- End Condition Occurrence Criteria
 
   ) E
