@@ -28,6 +28,21 @@
         "zip"
       ]
     },
+    "Argos": {
+      "Package": "Argos",
+      "Version": "0.0.0.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "Argos",
+      "RemoteUsername": "ohdsi",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "f0c9fdc277c317f835b6fbb9feff24b77daeb894",
+      "Hash": "20406b3bf3e343d02ade2fe5e1557bef",
+      "Requirements": [
+        "dplyr"
+      ]
+    },
     "BH": {
       "Package": "BH",
       "Version": "1.78.0-0",
@@ -240,6 +255,25 @@
       "Hash": "963ab8fbaf980a5b081ed40419081439",
       "Requirements": [
         "Matrix"
+      ]
+    },
+    "OhdsiRTools": {
+      "Package": "OhdsiRTools",
+      "Version": "2.0.2",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "OhdsiRTools",
+      "RemoteUsername": "ohdsi",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "e076a286dfb9ae925606b85747432f237e19c942",
+      "Hash": "82bda80414068756d66c47bab90a70ec",
+      "Requirements": [
+        "RJSONIO",
+        "codetools",
+        "formatR",
+        "httr",
+        "remotes"
       ]
     },
     "OhdsiSharing": {
@@ -535,10 +569,10 @@
     },
     "cluster": {
       "Package": "cluster",
-      "Version": "2.1.2",
+      "Version": "2.1.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ce49bfe5bc0b3ecd43a01fe1b01c2243",
+      "Hash": "5edbbabab6ce0bf7900a74fd4358628e",
       "Requirements": []
     },
     "codetools": {
@@ -571,6 +605,14 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "e8a1e41acf02548751f45c718d55aa6a",
+      "Requirements": []
+    },
+    "curl": {
+      "Package": "curl",
+      "Version": "4.3.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "0eb86baa62f06e8855258fa5a8048667",
       "Requirements": []
     },
     "data.table": {
@@ -693,10 +735,18 @@
     },
     "foreign": {
       "Package": "foreign",
-      "Version": "0.8-82",
+      "Version": "0.8-83",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "32b25c97ce306a760c4d9f787991b5d9",
+      "Hash": "4e43a8846712a6d5991b19b9bd5f9199",
+      "Requirements": []
+    },
+    "formatR": {
+      "Package": "formatR",
+      "Version": "1.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e45696cc90f4d5b993fa1a289e01c5df",
       "Requirements": []
     },
     "generics": {
@@ -825,6 +875,20 @@
         "htmltools",
         "jsonlite",
         "yaml"
+      ]
+    },
+    "httr": {
+      "Package": "httr",
+      "Version": "1.4.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "57557fac46471f0dbbf44705cc6a5c8c",
+      "Requirements": [
+        "R6",
+        "curl",
+        "jsonlite",
+        "mime",
+        "openssl"
       ]
     },
     "interp": {
@@ -969,22 +1033,30 @@
     },
     "memuse": {
       "Package": "memuse",
-      "Version": "4.2-1",
+      "Version": "4.2-2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "036935e7ecfa404c8c65045db9297736",
+      "Hash": "38cca78b5fdf5418eba3a4a41e0d5aa7",
       "Requirements": []
     },
     "mgcv": {
       "Package": "mgcv",
-      "Version": "1.8-39",
+      "Version": "1.8-41",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "055265005c238024e306fe0b600c89ff",
+      "Hash": "6b3904f13346742caa3e82dd0303d4ad",
       "Requirements": [
         "Matrix",
         "nlme"
       ]
+    },
+    "mime": {
+      "Package": "mime",
+      "Version": "0.12",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "18e9c28c1d3ca1560ce30658b22ce104",
+      "Requirements": []
     },
     "multcomp": {
       "Package": "multcomp",
@@ -1020,20 +1092,20 @@
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-155",
+      "Version": "3.1-160",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "74ad940dccc9e977189a5afe5fcdb7ba",
+      "Hash": "02e3c6e7df163aafa8477225e6827bc5",
       "Requirements": [
         "lattice"
       ]
     },
     "nnet": {
       "Package": "nnet",
-      "Version": "7.3-17",
+      "Version": "7.3-18",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "cb1d8d9f300a7e536b89c8a88c53f610",
+      "Hash": "170da2130d5332bea7d6ede01875ba1d",
       "Requirements": []
     },
     "openssl": {
@@ -1197,6 +1269,14 @@
         "vroom"
       ]
     },
+    "remotes": {
+      "Package": "remotes",
+      "Version": "2.4.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "227045be9aee47e6dda9bb38ac870d67",
+      "Requirements": []
+    },
     "renv": {
       "Package": "renv",
       "Version": "0.16.0",
@@ -1256,10 +1336,10 @@
     },
     "rpart": {
       "Package": "rpart",
-      "Version": "4.1.16",
+      "Version": "4.1.19",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ea3ca1d9473daabb3cd0f1b4f974c1ed",
+      "Hash": "b3c892a81783376cc2204af0f5805a80",
       "Requirements": []
     },
     "rprojroot": {
@@ -1343,10 +1423,10 @@
     },
     "survival": {
       "Package": "survival",
-      "Version": "3.2-13",
+      "Version": "3.4-0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6f0a0fadc63bc6570fe172770f15bbc4",
+      "Hash": "04411ae66ab4659230c067c32966fc20",
       "Requirements": [
         "Matrix"
       ]
@@ -1451,14 +1531,18 @@
     },
     "vctrs": {
       "Package": "vctrs",
-      "Version": "0.5.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "001fd6a5ebfff8316baf9fb2b5516dc9",
+      "Version": "0.4.2",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "vctrs",
+      "RemoteUsername": "r-lib",
+      "RemoteRef": "v0.4.2",
+      "RemoteSha": "2e57c844e0662d359db626ef43108bd51932323b",
+      "Hash": "9f4fbbe78aa238d792864cc6c58bc7d2",
       "Requirements": [
         "cli",
         "glue",
-        "lifecycle",
         "rlang"
       ]
     },
@@ -1539,10 +1623,10 @@
     },
     "zip": {
       "Package": "zip",
-      "Version": "2.2.1",
+      "Version": "2.2.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a7e91189fa51d9029a30eba3831ce53f",
+      "Hash": "c42bfcec3fa6a0cce17ce1f8bc684f88",
       "Requirements": []
     },
     "zoo": {
