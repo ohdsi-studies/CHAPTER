@@ -56,6 +56,9 @@ RUN R -e 'devtools::install_github("OHDSI/CohortMethod",ref="v4.2.0")'
 RUN R -e 'devtools::install_github("OHDSI/MethodEvaluation",ref="v2.1.0")'
 RUN R -e 'devtools::install_github("OHDSI/EmpiricalCalibration",ref="v2.1.0")'
 
+# install CohortDiagnostics
+RUN R -e 'devtools::install_github("OHDSI/CohortDiagnostics",ref="v2.0.0")'
+
 # create folders
 RUN mkdir -p /home/rstudio/temp
 RUN mkdir -p /home/rstudio/jdbc
