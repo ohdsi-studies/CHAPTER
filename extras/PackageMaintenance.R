@@ -1,6 +1,6 @@
-# Copyright 2022 Observational Health Data Sciences and Informatics
+# Copyright 2020 Observational Health Data Sciences and Informatics
 #
-# This file is part of CHAPTER
+# This file is part of examplePackage
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,34 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#Package name
-packageFiles <- list.files(path = ".",
-                           full.names = TRUE,
-                           recursive = T)
-
-packageFiles <- packageFiles[!grepl("Docker", packageFiles)] #Remove files in Docker
-for (iFile in packageFiles){
-    iText <- readLines(iFile)
-    iText2 <- gsub(pattern = "CHAPTER", replace = "CHAPTER", x = iText)
-    writeLines(iText2, con = iFile)
-}
-
 # Format and check code ---------------------------------------------------
-# OhdsiRTools::formatRFolder()
-OhdsiRTools::checkUsagePackage("CHAPTER")
+OhdsiRTools::formatRFolder()
+OhdsiRTools::checkUsagePackage("examplePackage")
 OhdsiRTools::updateCopyrightYearFolder()
 
 # Create manual -----------------------------------------------------------
-unlink("extras/UsingSkeletonPackage.pdf")
-shell("R CMD Rd2pdf ./ --output=extras/UsingSkeletonPackage.pdf")
+shell("rm extras/examplePackage.pdf")
+shell("R CMD Rd2pdf ./ --output=extras/examplePackage.pdf")
+
+
+# Insert cohort definitions from ATLAS into package -----------------------
+ROhdsiWebApi::insertCohortDefinitionSetInPackage(fileName = "inst/settings/CohortsToCreate.csv",
+                                                 baseUrl = Sys.getenv("ohdsiBaseUrl"),
+                                                 insertTableSql = TRUE,
+                                                 insertCohortCreationR = TRUE,
+                                                 generateStats = TRUE,
+                                                 packageName = "examplePackage")
 
 # Store environment in which the study was executed -----------------------
-OhdsiRTools::createRenvLockFile(rootPackage = "CHAPTER",
-                                mode = "description",
-                                ohdsiGitHubPackages = unique(c(OhdsiRTools::getOhdsiGitHubPackages(),
-                                                               "CohortGenerator")),
-                                includeRootPackage = FALSE)
-
-
-
-
+OhdsiRTools::insertEnvironmentSnapshotInPackage("examplePackage")

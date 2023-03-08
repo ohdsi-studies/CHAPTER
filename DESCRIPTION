@@ -1,12 +1,23 @@
 Package: CHAPTER
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+Type: Package
+Title: CHAPTER
+Version: 0.0.1
+Author@R: c(
+	person("Subin", "Kim", , "jg051623@yuhs.ac", role = c("aut", "cre")),
+	person("Seng Chan", "You",,"seng.chan.you@ohdsi.org", role = c("aut"))
+	)
+Maintainer: Subin Kim <jg051623@yuhs.ac>
+Description: A package for CHAPTER study.
+Depends:
+    DatabaseConnector (>= 2.2.0)
+Imports:
+	CohortDiagnostics
+Suggests:
+    knitr,
+    rmarkdown,
+    ROhdsiWebApi,
+    OhdsiRTools
+License: Apache License 2.0
+VignetteBuilder: knitr
+LazyData: TRUE
+RoxygenNote: 7.1.2
