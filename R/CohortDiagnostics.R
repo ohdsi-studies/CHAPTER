@@ -71,8 +71,8 @@ runCohortDiagnostics <- function(connectionDetails,
                                  runOrphanConcepts = TRUE,
                                  runBreakdownIndexEvents = TRUE,
                                  runIncidenceRate = TRUE,
-                                 runCohortCharacterization = TRUE,
-                                 runTemporalCohortCharacterization = TRUE,
+                                 # runCohortCharacterization = TRUE,
+                                 # runTemporalCohortCharacterization = TRUE,
                                  minCellCount = 5) {
   if (!file.exists(outputFolder))
     dir.create(outputFolder, recursive = TRUE)
@@ -113,8 +113,8 @@ runCohortDiagnostics <- function(connectionDetails,
                                           runBreakdownIndexEvents = runBreakdownIndexEvents,
                                           runIncidenceRate = runIncidenceRate,
                                           runCohortOverlap = FALSE,
-                                          runCohortCharacterization = runCohortCharacterization,
-                                          runTemporalCohortCharacterization = runTemporalCohortCharacterization,
+                                          runCohortCharacterization = FALSE,
+                                          runTemporalCohortCharacterization = FALSE,
                                           minCellCount = minCellCount)
   
   # if(runTimeDistributions){

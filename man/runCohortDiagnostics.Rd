@@ -9,7 +9,7 @@ runCohortDiagnostics(
   cdmDatabaseSchema,
   cohortDatabaseSchema = cdmDatabaseSchema,
   cohortTable = "cohort",
-  oracleTempSchema = cohortDatabaseSchema,
+  oracleTempSchema = NULL,
   outputFolder,
   databaseId = "Unknown",
   databaseName = "Unknown",
@@ -18,11 +18,8 @@ runCohortDiagnostics(
   runInclusionStatistics = TRUE,
   runIncludedSourceConcepts = TRUE,
   runOrphanConcepts = TRUE,
-  runTimeDistributions = TRUE,
   runBreakdownIndexEvents = TRUE,
-  runIncidenceRates = TRUE,
-  runCohortOverlap = TRUE,
-  runCohortCharacterization = TRUE,
+  runIncidenceRate = TRUE,
   minCellCount = 5
 )
 }
@@ -66,9 +63,12 @@ Synthetic Public Use Files (SynPUFs)').}
 
 \item{runOrphanConcepts}{Generate and export potential orphan concepts?}
 
-\item{runTimeDistributions}{Generate and export cohort time distributions?}
-
 \item{runBreakdownIndexEvents}{Generate and export the breakdown of index events?}
+
+\item{minCellCount}{The minimum number of subjects contributing to a count before it can be included 
+in packaged results.}
+
+\item{runTimeDistributions}{Generate and export cohort time distributions?}
 
 \item{runIncidenceRates}{Generate and export the cohort incidence rates?}
 
@@ -76,8 +76,7 @@ Synthetic Public Use Files (SynPUFs)').}
 
 \item{runCohortCharacterization}{Generate and export the cohort characterization?}
 
-\item{minCellCount}{The minimum number of subjects contributing to a count before it can be included 
-in packaged results.}
+\item{runTemporalCohortCharacterization}{Generate and export the temporal cohort characterization?}
 }
 \description{
 Execute the cohort diagnostics
