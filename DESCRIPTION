@@ -1,0 +1,23 @@
+Package: CHAPTER
+Type: Package
+Title: CHAPTER
+Version: 0.0.1
+Author@R: c(
+	person("Subin", "Kim", , "jg051623@yuhs.ac", role = c("aut", "cre")),
+	person("Seng Chan", "You",,"seng.chan.you@ohdsi.org", role = c("aut"))
+	)
+Maintainer: Subin Kim <jg051623@yuhs.ac>
+Description: A package for CHAPTER study.
+Depends:
+    DatabaseConnector (>= 2.2.0)
+Imports:
+	CohortDiagnostics
+Suggests:
+    knitr,
+    rmarkdown,
+    ROhdsiWebApi,
+    OhdsiRTools
+License: Apache License 2.0
+VignetteBuilder: knitr
+LazyData: TRUE
+RoxygenNote: 7.1.2
