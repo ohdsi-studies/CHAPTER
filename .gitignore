@@ -4,3 +4,4 @@
 .Ruserdata
 *.tmp
 *ToIgnore.R
+.DS_Store
