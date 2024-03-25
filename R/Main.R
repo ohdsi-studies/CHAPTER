@@ -1,99 +1,71 @@
-# Create zip file
-zipName <- paste0(db.name,"_Results")
-tempDir <- zipName
-tempDirCreated <- FALSE
-if (!dir.exists(tempDir)) {
-  dir.create(tempDir)
+# Copyright 2024 Observational Health Data Sciences and Informatics
+#
+# This file is part of CHAPTER
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+#' Execute the CHAPTER
+#' 
+#' @details 
+#' This function executes the incidence prevalence pacakges. 
+#' 
+#' @param connectionDetails    An object of type \code{connectionDetails} as created using the
+#'                             \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
+#'                             DatabaseConnector package.
+#' @param cdmDatabaseSchema    Schema name where your patient-level data in OMOP CDM format resides.
+#'                             Note that for SQL Server, this should include both the database and
+#'                             schema name, for example 'cdm_data.dbo'.
+#' @param cohortDatabaseSchema Schema name where intermediate data can be stored. You will need to have
+#'                             write priviliges in this schema. Note that for SQL Server, this should
+#'                             include both the database and schema name, for example 'cdm_data.dbo'.
+#' @param cohortTable          The name of the table that will be created in the work database schema.
+#'                             This table will hold the exposure and outcome cohorts used in this
+#'                             study.
+#' @param oracleTempSchema     Should be used in Oracle to specify a schema where the user has write
+#'                             priviliges for storing temporary tables.
+#' @param outputFolder         Name of local folder to place results; make sure to use forward slashes
+#'                             (/). Do not use a folder on a network drive since this greatly impacts
+#'                             performance.
+#' @param databaseId           A short string for identifying the database (e.g.
+#'                             'Synpuf').
+#' @param databaseName         The full name of the database (e.g. 'Medicare Claims
+#'                             Synthetic Public Use Files (SynPUFs)').
+#' @param databaseDescription  A short description (several sentences) of the database.
+#' @importFrom dplyr "%>%"
+#' @export
+executeIncidencePrevalence <- function(outputFolder,
+                                       databaseId){
+  
+  if (!file.exists(outputFolder))
+    dir.create(outputFolder, recursive = TRUE)
+  
+  # Create zip file
+  zipName <- paste0(databaseId,"_Results")
+  tempDir <- file.path(outputFolder, zipName)
+  if (!file.exists(tempDir))
+    dir.create(tempDir, recursive = TRUE)
   tempDirCreated <- TRUE
+  
+  # Start log
+  ParallelLogger::addDefaultFileLogger(file.path(outputFolder, "log.txt"))
+  ParallelLogger::addDefaultErrorReportLogger(file.path(outputFolder, "errorReportR.txt"))
+  on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
+  on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
+  
+  # Retrieve cohorts
+  cohortsToCreate <- system.file("settings",
+                                 "CohortsToCreate.csv",
+                                 package = "CHAPTER") %>% read.csv(header = FALSE)
+  print(cohortsToCreate)
 }
 
-start <- Sys.time()
-
-# Start log
-log_file <- paste0(tempDir, "/log.txt")
-logger <- create.logger()
-logfile(logger) <- log_file
-level(logger) <- "INFO"
-
-# Create table names to use throughout the study
-LongCovidCohortsName <- paste0("lccohorts")
-PascCohortsName <- paste0("pasccohorts")
-AcuteCohortsName <- paste0("accohorts")
-AcuteCohortsCareName <- paste0("acccohorts")
-AcuteCohortsPrognosisName <- paste0("accpohorts")
-ChronicCohortsName <- paste0("ccohorts")
-ChronicCohortsCareName <- paste0("cccohorts")
-ChronicCohortsPrognosisName <- paste0("ccpohorts")
-OverlapCohortsName <- paste0("covidcohorts")
-HUCohortsName <- paste0("hucohorts")
-
-# Create vector with all names
-InitialCohortNames <- c(LongCovidCohortsName, PascCohortsName, AcuteCohortsName,
-#                        AcuteCohortsCareName, AcuteCohortsPrognosisName,
-                        ChronicCohortsName,
-#                        ChronicCohortsCareName, ChronicCohortsPrognosisName,
-                        HUCohortsName)
-
-CohortNames <- c(AcuteCohortsName,
-                 #                        AcuteCohortsCareName, AcuteCohortsPrognosisName,
-                 ChronicCohortsName,
-                 #                        ChronicCohortsCareName, ChronicCohortsPrognosisName,
-                 HUCohortsName, OverlapCohortsName)
-
-# Read functions needed throughout the study
-source(here::here("functions.R"))
-
-# Read initial cohorts
-if (readInitialCohorts){
-  info(logger, 'INSTANTIATING INITIAL COHORTS')
-  cdm <- cdmFromCon(db, cdm_database_schema,
-                    writeSchema = c(results_database_schema, prefix = table_stem))
-  source(here("1_InitialCohorts", "InstantiateStudyCohorts.R"), local=TRUE)
-  info(logger, 'GOT INITIAL COHORTS')
-} else {
-  info(logger, 'INITIAL COHORTS ALREADY INSTANTIATED')
-  cdm <- cdmFromCon(db, cdm_database_schema,
-                    writeSchema = c(results_database_schema, prefix = table_stem),
-    cohortTables = InitialCohortNames)
-  info(logger, 'INITIAL COHORTS READ')
-}
-
-# Get cdm snapshot
-snapshot <- CDMConnector::snapshot(cdm)
-write.csv(snapshot, file = here::here(tempDir, paste0(attr(cdm, "cdm_name"),"_snapshot.csv")))
-
-# Get study cohorts (long covid and pasc related)
-if(getStudyCohorts) {
-  info(logger, 'GETTING LONG COVID STUDY COHORTS')
-    source(here("2_StudyCohorts","getStudyCohorts.R"), local = TRUE)
-  info(logger, 'GOT LONG COVID STUDY COHORTS')
-}
-
-# Objective 1: Incidence and Prevalence
-if(doIncidencePrevalence) {
-  info(logger, 'GETTING INCIDENCE AND PREVALENCE')
-    source(here("3_IncidencePrevalence","incidence.R"), local = TRUE)
-  info(logger, 'GOT INCIDENCE AND PREVALENCE')
-}
-
-# Objective 2: Time Series
-# (This will probably be done manually as a post-processing of incidence results)
-#if(doTimeSeries) {
-#  info(logger, 'PERFORMING TIME SERIES ANALYSIS')
-#    source(here("4_TimeSeries","TimeSeries_code.R"), local = TRUE)
-#  info(logger, 'FINISHED TIME SERIES ANALYSIS')
-#}
-
-zip::zip(zipfile = file.path(output.folder, paste0(zipName, ".zip")),
-         files = list.files(tempDir, full.names = TRUE))
-if (tempDirCreated) {
-  unlink(tempDir, recursive = TRUE)
-}
-info(logger, 'SAVED RESULTS IN THE OUTPUT FOLDER')
-
-print("Done!")
-print("If all has worked, there should now be a zip file with your results
-      in the output folder to share")
-print("Thank you for running the study!")
-Sys.time() - start
-readLines(log_file)
