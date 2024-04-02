@@ -2,11 +2,37 @@
 % Please edit documentation in R/Main.R
 \name{executeIncidencePrevalence}
 \alias{executeIncidencePrevalence}
-\title{Execute the CHAPTER}
+\title{Execute the CHAPTER study}
 \usage{
-executeIncidencePrevalence(outputFolder, databaseId)
+executeIncidencePrevalence(
+  dbConnection,
+  cdmDatabaseSchema,
+  cohortDatabaseSchema,
+  cohortStem,
+  outputFolder,
+  databaseId,
+  readCohorts = TRUE,
+  createCovidCohorts = TRUE
+)
 }
 \arguments{
+\item{dbConnection}{An object of type \code{dbConnection} as created using the
+\code{\link[DBI]{dbConnect}} function in the
+DBI package.}
+
+\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
+Note that for SQL Server, this should include both the database and
+schema name, for example 'cdm_data.dbo'.}
+
+\item{cohortDatabaseSchema}{Schema name where intermediate data can be stored. You will need to have
+write privileges in this schema. Note that for SQL Server, this should
+include both the database and schema name, for example 'cdm_data.dbo'.}
+
+\item{cohortStem}{The table stem for the name of the tables that will be created in the 
+work database schema.
+These tables will hold the exposure and outcome cohorts used in this
+study.}
+
 \item{outputFolder}{Name of local folder to place results; make sure to use forward slashes
 (/). Do not use a folder on a network drive since this greatly impacts
 performance.}
@@ -14,33 +40,14 @@ performance.}
 \item{databaseId}{A short string for identifying the database (e.g.
 'Synpuf').}
 
-\item{connectionDetails}{An object of type \code{connectionDetails} as created using the
-\code{\link[DatabaseConnector]{createConnectionDetails}} function in the
-DatabaseConnector package.}
+\item{readCohorts}{A boolean to choose whether to read and instantiate the initial cohorts
+from the available jsons.}
 
-\item{cdmDatabaseSchema}{Schema name where your patient-level data in OMOP CDM format resides.
-Note that for SQL Server, this should include both the database and
-schema name, for example 'cdm_data.dbo'.}
-
-\item{cohortDatabaseSchema}{Schema name where intermediate data can be stored. You will need to have
-write priviliges in this schema. Note that for SQL Server, this should
-include both the database and schema name, for example 'cdm_data.dbo'.}
-
-\item{cohortTable}{The name of the table that will be created in the work database schema.
-This table will hold the exposure and outcome cohorts used in this
-study.}
-
-\item{oracleTempSchema}{Should be used in Oracle to specify a schema where the user has write
-priviliges for storing temporary tables.}
-
-\item{databaseName}{The full name of the database (e.g. 'Medicare Claims
-Synthetic Public Use Files (SynPUFs)').}
-
-\item{databaseDescription}{A short description (several sentences) of the database.}
+\item{createCovidCohorts}{A boolean to choose whether to create the COVID related cohorts.}
 }
 \description{
-Execute the CHAPTER
+Execute the CHAPTER study
 }
 \details{
-This function executes the incidence prevalence pacakges.
+This function executes the incidence analyses of CHAPTER study.
 }

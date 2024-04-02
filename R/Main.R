@@ -14,37 +14,43 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Execute the CHAPTER
+#' Execute the CHAPTER study
 #' 
 #' @details 
-#' This function executes the incidence prevalence pacakges. 
+#' This function executes the incidence analyses of CHAPTER study. 
 #' 
-#' @param connectionDetails    An object of type \code{connectionDetails} as created using the
-#'                             \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
-#'                             DatabaseConnector package.
+#' @param dbConnection         An object of type \code{dbConnection} as created using the
+#'                             \code{\link[DBI]{dbConnect}} function in the
+#'                             DBI package.
 #' @param cdmDatabaseSchema    Schema name where your patient-level data in OMOP CDM format resides.
 #'                             Note that for SQL Server, this should include both the database and
 #'                             schema name, for example 'cdm_data.dbo'.
 #' @param cohortDatabaseSchema Schema name where intermediate data can be stored. You will need to have
-#'                             write priviliges in this schema. Note that for SQL Server, this should
+#'                             write privileges in this schema. Note that for SQL Server, this should
 #'                             include both the database and schema name, for example 'cdm_data.dbo'.
-#' @param cohortTable          The name of the table that will be created in the work database schema.
-#'                             This table will hold the exposure and outcome cohorts used in this
+#' @param cohortStem           The table stem for the name of the tables that will be created in the 
+#'                             work database schema.
+#'                             These tables will hold the exposure and outcome cohorts used in this
 #'                             study.
-#' @param oracleTempSchema     Should be used in Oracle to specify a schema where the user has write
-#'                             priviliges for storing temporary tables.
 #' @param outputFolder         Name of local folder to place results; make sure to use forward slashes
 #'                             (/). Do not use a folder on a network drive since this greatly impacts
 #'                             performance.
 #' @param databaseId           A short string for identifying the database (e.g.
 #'                             'Synpuf').
-#' @param databaseName         The full name of the database (e.g. 'Medicare Claims
-#'                             Synthetic Public Use Files (SynPUFs)').
-#' @param databaseDescription  A short description (several sentences) of the database.
+#' @param readCohorts          A boolean to choose whether to read and instantiate the initial cohorts
+#'                             from the available jsons.
+#' @param createCovidCohorts   A boolean to choose whether to create the COVID related cohorts.
+#' 
 #' @importFrom dplyr "%>%"
 #' @export
-executeIncidencePrevalence <- function(outputFolder,
-                                       databaseId){
+executeIncidencePrevalence <- function(dbConnection,
+                                       cdmDatabaseSchema,
+                                       cohortDatabaseSchema,
+                                       cohortStem,
+                                       outputFolder,
+                                       databaseId,
+                                       readCohorts = TRUE,
+                                       createCovidCohorts = TRUE){
   
   if (!file.exists(outputFolder))
     dir.create(outputFolder, recursive = TRUE)
@@ -62,10 +68,92 @@ executeIncidencePrevalence <- function(outputFolder,
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_FILE_LOGGER", silent = TRUE))
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
   
-  # Retrieve cohorts
-  cohortsToCreate <- system.file("settings",
-                                 "CohortsToCreate.csv",
-                                 package = "CHAPTER") %>% read.csv(header = FALSE)
-  print(cohortsToCreate)
+  cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
+                    writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                    cdmName = databaseId)
+  
+  # Get the cdm snapshot
+  snapshot <- CDMConnector::snapshot(cdm)
+  write.csv(snapshot, 
+            file = here::here(
+              tempDir, 
+              paste0(attr(cdm, "cdm_name"),"_snapshot.csv")))
+  ParallelLogger::logInfo("CDM snapshot retrieved")
+  
+  # Retrieve the cohorts from the json files
+  if(readCohorts) {
+    cohortsToCreate <- system.file("settings",
+                                   "CohortsToCreateTest.csv",
+                                   package = "CHAPTER") %>% read.csv()
+    
+    tableNames <- cohortsToCreate %>%
+      dplyr::pull("table_name") %>%
+      unique()
+    
+    for(tn in tableNames) {
+      folderName <- sub('^(\\w?)', '\\U\\1', tn, perl=T)
+      folderName <- gsub('\\_(\\w?)', '\\U\\1', folderName, perl=T)
+      cohortsToCreateWorking <- CDMConnector::readCohortSet(
+        system.file("additional_cohorts",folderName, package = "CHAPTER"))
+      
+      cdm <- CDMConnector::generateCohortSet(cdm, 
+                                             cohortsToCreateWorking,
+                                             name = tn,
+                                             overwrite = TRUE)
+    }
+  } else {
+    cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
+                      writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                      cdmName = databaseId,
+                      cohortTables = c("chronic_cohorts", "hu_cohorts",
+                                       "acute_cohorts", "long_covid_cohorts",
+                                       "pasc_cohorts"))
+  }
+  ParallelLogger::logInfo("Initial cohorts read and instantiated")
+  
+  latestDataAvailability <- cdm$observation_period %>%
+    dplyr::select(observation_period_end_date) %>%
+    dplyr::filter(observation_period_end_date == max(observation_period_end_date)) %>%
+    dplyr::pull() %>% unique() %>% as.Date()
+  
+  cohortNames <- c("chronic_cohorts", "hu_cohorts",
+                   "acute_cohorts", "long_covid_cohorts",
+                   "pasc_cohorts") # not done like this, check later
+  
+  # Create the COVID related cohorts
+  if(createCovidCohorts) {
+    createCovidCohorts(cdm = cdm)
+  }
+  ParallelLogger::logInfo("COVID related cohorts created")
+  
+  cohortNames <- c("chronic_cohorts", "hu_cohorts",
+                   "acute_cohorts", "overlap_cohorts",
+                   "acute_prognosis_cohorts") 
+  cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
+                    writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                    cdmName = databaseId,
+                    cohortTables = cohortNames)
+    
+  # Retrieve incidence analyses to perform
+  analysesToDo <- system.file("settings",
+                              "AnalysesToPerform.csv",
+                              package = "CHAPTER") %>% read.csv()
+    
+  # Do the incidence calculations
+  getIncidenceResults(cdm = cdm,
+                      analyses = analysesToDo)
+  ParallelLogger::logInfo("Incidence results calculated")
+    
+  # Zip the final results
+  zip::zip(zipfile = file.path(outputFolder, paste0(zipName, ".zip")),
+           files = list.files(tempDir, full.names = TRUE))
+  if (tempDirCreated) {
+    unlink(tempDir, recursive = TRUE)
+  }
+  ParallelLogger::logInfo("Saved all results")
+    
+  print("Done!")
+  print("If all has worked, there should now be a zip file with your results
+         in the output folder to share")
+  print("Thank you for running the study!")
 }
-
