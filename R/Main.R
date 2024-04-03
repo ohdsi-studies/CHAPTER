@@ -26,12 +26,8 @@
 #'                             Note that for SQL Server, this should include both the database and
 #'                             schema name, for example 'cdm_data.dbo'.
 #' @param cohortDatabaseSchema Schema name where intermediate data can be stored. You will need to have
-#'                             write privileges in this schema. Note that for SQL Server, this should
-#'                             include both the database and schema name, for example 'cdm_data.dbo'.
-#' @param cohortStem           The table stem for the name of the tables that will be created in the 
-#'                             work database schema.
-#'                             These tables will hold the exposure and outcome cohorts used in this
-#'                             study.
+#'                             write privileges in this schema. For PostgreSQL, c(schema_name, prefix = table_stem),
+#'                             for SQLServer, c(catalog = catalog_name, schema = schema_name, prefix = table_stem).
 #' @param outputFolder         Name of local folder to place results; make sure to use forward slashes
 #'                             (/). Do not use a folder on a network drive since this greatly impacts
 #'                             performance.
@@ -46,16 +42,12 @@
 executeIncidencePrevalence <- function(dbConnection,
                                        cdmDatabaseSchema,
                                        cohortDatabaseSchema,
-                                       cohortStem,
                                        outputFolder,
                                        databaseId,
                                        readCohorts = TRUE,
                                        createCovidCohorts = TRUE){
   
-  if (!file.exists(outputFolder))
-    dir.create(outputFolder, recursive = TRUE)
-  
-  # Create zip file
+  # Create zip file for results
   zipName <- paste0(databaseId,"_Results")
   tempDir <- file.path(outputFolder, zipName)
   if (!file.exists(tempDir))
@@ -69,7 +61,7 @@ executeIncidencePrevalence <- function(dbConnection,
   on.exit(ParallelLogger::unregisterLogger("DEFAULT_ERRORREPORT_LOGGER", silent = TRUE), add = TRUE)
   
   cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
-                    writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                    writeSchema = cohortDatabaseSchema,
                     cdmName = databaseId)
   
   # Get the cdm snapshot
@@ -103,7 +95,7 @@ executeIncidencePrevalence <- function(dbConnection,
     }
   } else {
     cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
-                      writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                      writeSchema = cohortDatabaseSchema,
                       cdmName = databaseId,
                       cohortTables = c("chronic_cohorts", "hu_cohorts",
                                        "acute_cohorts", "long_covid_cohorts",
@@ -118,19 +110,23 @@ executeIncidencePrevalence <- function(dbConnection,
   
   cohortNames <- c("chronic_cohorts", "hu_cohorts",
                    "acute_cohorts", "long_covid_cohorts",
-                   "pasc_cohorts") # not done like this, check later
+                   "pasc_cohorts") 
   
   # Create the COVID related cohorts
   if(createCovidCohorts) {
-    createCovidCohorts(cdm = cdm)
+    createCovidCohorts(cdm = cdm,
+                       tempDir = tempDir,
+                       cohortNames = cohortNames,
+                       latestDataAvailability = latestDataAvailability)
   }
   ParallelLogger::logInfo("COVID related cohorts created")
   
   cohortNames <- c("chronic_cohorts", "hu_cohorts",
                    "acute_cohorts", "overlap_cohorts",
                    "acute_prognosis_cohorts") 
+  
   cdm <- cdmFromCon(dbConnection, cdmDatabaseSchema,
-                    writeSchema = c(cohortDatabaseSchema, prefix = cohortStem),
+                    writeSchema = cohortDatabaseSchema,
                     cdmName = databaseId,
                     cohortTables = cohortNames)
     
@@ -141,7 +137,10 @@ executeIncidencePrevalence <- function(dbConnection,
     
   # Do the incidence calculations
   getIncidenceResults(cdm = cdm,
-                      analyses = analysesToDo)
+                      analyses = analysesToDo,
+                      cohortNames = cohortNames,
+                      tempDir = tempDir,
+                      latestDataAvailability = latestDataAvailability)
   ParallelLogger::logInfo("Incidence results calculated")
     
   # Zip the final results

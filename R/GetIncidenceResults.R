@@ -24,13 +24,18 @@
 #'                             in the CDMConnector package.
 #' @param analyses             A tibble specifying the incidence analyses to
 #'                             conduct, retrieved from the settings folder  
-#' @param cohortNames          Names of all the cohorts stored in the cdm              
+#' @param cohortNames          Names of all the cohorts stored in the cdm  
+#' @param tempDir              Directory where the output is stored   
+#' @param latestDataAvailability    Date of the latest data availability
 #' 
 #' @importFrom dplyr "%>%"
 #' @export
 #' 
 getIncidenceResults <- function(cdm,
-                                analyses) {
+                                analyses,
+                                cohortNames,
+                                tempDir,
+                                latestDataAvailability) {
 
   # Output folder for Incidence
   outputIp <- file.path(tempDir,"Incidence")
@@ -64,7 +69,7 @@ getIncidenceResults <- function(cdm,
   cdm <- IncidencePrevalence::generateDenominatorCohortSet(
     cdm =  cdm,
     name = "denominator",
-    cohortDateRange = c(as.Date("2018-01-01"), as.Date(latestDataAvailability)), # should ask for latest data?
+    cohortDateRange = c(as.Date("2018-01-01"), as.Date(latestDataAvailability)),
     daysPriorObservation = 365,
     sex = c("Male", "Female", "Both"),
     ageGroup = list(c(0,39),c(40,65),c(66,150),c(0,150))
@@ -122,7 +127,7 @@ getIncidenceResults <- function(cdm,
       name = "denominator",
       targetCohortTable = workingDenominator %>% dplyr::pull(denominator_table_name),
       targetCohortId = workingDenominator %>% dplyr::pull(denominator_id),
-      cohortDateRange = c(as.Date("2018-01-01"), as.Date(latestDataAvailability)), # should ask for latest data?
+      cohortDateRange = c(as.Date("2018-01-01"), as.Date(latestDataAvailability)),
       daysPriorObservation = 365,
       sex = c("Male", "Female", "Both"),
       ageGroup = list(c(0,39),c(40,65),c(66,150),c(0,150))

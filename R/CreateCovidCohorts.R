@@ -22,11 +22,17 @@
 #' @param cdm                  A cdm object as created using the
 #'                             \code{\link[CDMConnector]{cdmFromCon}} function 
 #'                             in the CDMConnector package.
+#' @param tempDir              Directory where the output is stored     
+#' @param cohortNames          Names of all the cohorts stored in the cdm    
+#' @param latestDataAvailability    Date of the latest data availability
 #' 
 #' @importFrom dplyr "%>%"
 #' @export
 #' 
-createCovidCohorts <- function(cdm) {
+createCovidCohorts <- function(cdm,
+                               tempDir,
+                               cohortNames,
+                               latestDataAvailability) {
 
   # observation period + death table
   observationDeath <- cdm$observation_period %>%
