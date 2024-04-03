@@ -22,10 +22,15 @@
 #' @param dbConnection         An object of type \code{dbConnection} as created using the
 #'                             \code{\link[DBI]{dbConnect}} function in the
 #'                             DBI package.
-#' @param cdmDatabaseSchema    Schema name where your patient-level data in OMOP CDM format resides.
-#'                             Note that for SQL Server, this should include both the database and
-#'                             schema name, for example 'cdm_data.dbo'.
-#' @param cohortDatabaseSchema Schema name where intermediate data can be stored. You will need to have
+=======
+#' Execute the CHAPTER
+#' 
+#' @details 
+#' This function executes the incidence prevalence pacakges. 
+#' 
+#' @param connectionDetails    An object of type \code{connectionDetails} as created using the
+#'                             \code{\link[DatabaseConnector]{createConnectionDetails}} function in the
+#'                             DatabaseConnector package.
 #'                             write privileges in this schema. For PostgreSQL, c(schema_name, prefix = table_stem),
 #'                             for SQLServer, c(catalog = catalog_name, schema = schema_name, prefix = table_stem).
 #' @param outputFolder         Name of local folder to place results; make sure to use forward slashes
@@ -156,3 +161,4 @@ executeIncidencePrevalence <- function(dbConnection,
          in the output folder to share")
   print("Thank you for running the study!")
 }
+

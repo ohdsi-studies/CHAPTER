@@ -2,6 +2,7 @@
 % Please edit documentation in R/Main.R
 \name{executeIncidencePrevalence}
 \alias{executeIncidencePrevalence}
+
 \title{Execute the CHAPTER study}
 \usage{
 executeIncidencePrevalence(
