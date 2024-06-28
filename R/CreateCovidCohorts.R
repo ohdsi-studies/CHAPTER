@@ -330,7 +330,7 @@ createCovidCohorts <- function(cdm,
 
   overlapLcOne <- overlap %>%
     dplyr::group_by(subject_id) %>%
-    dbplyr::window_order(cohort_definition_id) %>%
+    dbplyr::window_order(cohort_start_date) %>%
     dplyr::filter(row_number() == 1) %>%
     dplyr::mutate(cohort_definition_id = 1) %>%
     dplyr::ungroup() %>%
@@ -339,7 +339,7 @@ createCovidCohorts <- function(cdm,
   overlapLcTwo <- overlapLcOne %>%
     dplyr::inner_join(overlap %>%
                  dplyr::group_by(subject_id) %>%
-                 dbplyr::window_order(cohort_definition_id) %>%
+                 dbplyr::window_order(cohort_start_date) %>%
                  dplyr::filter(row_number() > 1) %>%
                  dplyr::select(subject_id) %>%
                  dplyr::ungroup() %>%
@@ -353,7 +353,7 @@ createCovidCohorts <- function(cdm,
   overlapLcThree <- overlapLcOne %>%
     dplyr::inner_join(overlap %>%
                  dplyr::group_by(subject_id) %>%
-                 dbplyr::window_order(cohort_definition_id) %>%
+                 dbplyr::window_order(cohort_start_date) %>%
                  dplyr::filter(row_number() > 2) %>%
                  dplyr::select(subject_id) %>%
                  dplyr::ungroup() %>%
@@ -458,7 +458,7 @@ createCovidCohorts <- function(cdm,
 
   overlapPascOne <- overlapPasc %>%
     dplyr::group_by(subject_id) %>%
-    dbplyr::window_order(cohort_definition_id) %>%
+    dbplyr::window_order(cohort_start_date) %>%
     dplyr::filter(row_number() == 1) %>%
     dplyr::mutate(cohort_definition_id = 4) %>%
     dplyr::ungroup() %>%
@@ -467,7 +467,7 @@ createCovidCohorts <- function(cdm,
   overlapPascTwo <- overlapPascOne %>%
     dplyr::inner_join(overlapPasc %>%
                  dplyr::group_by(subject_id) %>%
-                 dbplyr::window_order(cohort_definition_id) %>%
+                 dbplyr::window_order(cohort_start_date) %>%
                  dplyr::filter(row_number() > 1) %>%
                  dplyr::select(subject_id) %>%
                  dplyr::ungroup() %>%
@@ -481,14 +481,14 @@ createCovidCohorts <- function(cdm,
   overlapPascThree <- overlapPascOne %>%
     dplyr::inner_join(overlapPasc %>%
                  dplyr::group_by(subject_id) %>%
-                 dbplyr::window_order(cohort_definition_id) %>%
+                 dbplyr::window_order(cohort_start_date) %>%
                  dplyr::filter(row_number() > 2) %>%
                  dplyr::select(subject_id) %>%
                  dplyr::ungroup() %>%
                  dplyr::distinct() %>%
                  dplyr::compute(),
                by = "subject_id") %>%
-    dplyr::mutate(cohort_definition_id = 3) %>%
+    dplyr::mutate(cohort_definition_id = 6) %>%
     dplyr::ungroup() %>%
     dplyr::compute()
 
@@ -597,6 +597,10 @@ createCovidCohorts <- function(cdm,
   # ------------------------------------------------------------------------------
   # Print counts of all cohorts (if >5)
   ParallelLogger::logInfo("- Getting cohort counts")
+  
+  cohortNames <- c("chronic_cohorts", "hu_cohorts",
+                   "acute_cohorts", "overlap_cohorts",
+                   "acute_prognosis_cohorts") 
 
   finalCounts <- list()
   for(i in 1:length(cohortNames)) {
@@ -611,7 +615,11 @@ createCovidCohorts <- function(cdm,
       dplyr::select(c("table_name", "cohort_name", "number_records", "number_subjects"))
   }
 
-  finalCounts <- dplyr::bind_rows(finalCounts)
+  finalCounts <- dplyr::bind_rows(finalCounts) %>%
+    dplyr::mutate(
+      number_records = dplyr::if_else(number_records < 5 & number_records > 0, NA, number_records),
+      number_subjects = dplyr::if_else(number_subjects < 5 & number_subjects > 0, NA, number_subjects)
+    )
 
   # Export csv
   write.csv(finalCounts,
