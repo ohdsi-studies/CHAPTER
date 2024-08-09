@@ -51,7 +51,7 @@ getIncidenceResults <- function(cdm,
   ParallelLogger::logInfo("- Getting table ones")
   
   for(tn in cohortNames) {
-    result <- PatientProfiles::summariseCharacteristics(
+    result <- CohortCharacteristics::summariseCharacteristics(
       cohort = cdm[[tn]],
       ageGroup = list(c(0, 19), c(20, 39), c(40, 59), c(60, 79), c(80, 150)) 
     )
