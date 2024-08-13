@@ -108,8 +108,8 @@ getIncidenceResults <- function(cdm,
     
     # So that death as an outcome can be picked up
     cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
-      dplyr::mutate(cohort_end_date = lubridate::as_date(cohort_end_date + lubridate::days(1))) %>% # check (K)
-      dplyr::mutate(cohort_start_date = lubridate::as_date(cohort_start_date + lubridate::days(1))) %>% # check (K)
+      dplyr::mutate(cohort_end_date = clock::add_days(.data$cohort_end_date,1L)) %>% 
+      dplyr::mutate(cohort_start_date = clock::add_days(.data$cohort_start_date,1L)) %>% 
       dplyr::compute()
     
   denominatorsRest <- analyses %>%
@@ -151,8 +151,8 @@ getIncidenceResults <- function(cdm,
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
       cohort_end_date - cohort_start_date > 365,
-      lubridate::as_date(cohort_start_date + lubridate::days(365)),
-      cohort_end_date)) %>% # check (K)
+      clock::add_days(.data$cohort_end_date,365L),
+      cohort_end_date)) %>% 
     dplyr::compute()
   
   for(cnd in denominatorsRest %>% dplyr::pull(denominator_name) %>% unique()) {
@@ -190,8 +190,8 @@ getIncidenceResults <- function(cdm,
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
       cohort_end_date - cohort_start_date > 30,
-      lubridate::as_date(cohort_start_date + lubridate::days(30)),
-      cohort_end_date)) %>% # check (K)
+      clock::add_days(.data$cohort_end_date,30L),
+      cohort_end_date)) %>% 
     dplyr::compute()
   
   for(cnd in denominatorsRest %>% dplyr::pull(denominator_name) %>% unique()) {
