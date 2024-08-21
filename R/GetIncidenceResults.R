@@ -151,7 +151,7 @@ getIncidenceResults <- function(cdm,
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
       cohort_end_date - cohort_start_date > 365,
-      clock::add_days(.data$cohort_end_date,365L),
+      clock::add_days(.data$cohort_start_date,365L),
       cohort_end_date)) %>% 
     dplyr::compute()
   
@@ -190,7 +190,7 @@ getIncidenceResults <- function(cdm,
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
       cohort_end_date - cohort_start_date > 30,
-      clock::add_days(.data$cohort_end_date,30L),
+      clock::add_days(.data$cohort_start_date,30L),
       cohort_end_date)) %>% 
     dplyr::compute()
   
