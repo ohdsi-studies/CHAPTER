@@ -145,13 +145,12 @@
     },
     "PatientProfiles": {
       "Package": "PatientProfiles",
-      "Version": "1.1.1",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "CDMConnector",
         "R",
-        "checkmate",
         "cli",
         "dplyr",
         "lifecycle",
@@ -163,7 +162,7 @@
         "tidyr",
         "visOmopResults"
       ],
-      "Hash": "b9a11a277ef3b480b3887b143d12b66c"
+      "Hash": "7923f16a151c8d02eefbf31489219764"
     },
     "R6": {
       "Package": "R6",
@@ -574,7 +573,7 @@
     },
     "omopgenerics": {
       "Package": "omopgenerics",
-      "Version": "0.2.3",
+      "Version": "0.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -583,13 +582,16 @@
         "dbplyr",
         "dplyr",
         "glue",
+        "lifecycle",
         "methods",
+        "purrr",
         "rlang",
         "snakecase",
         "stringr",
-        "tidyr"
+        "tidyr",
+        "vctrs"
       ],
-      "Hash": "455369900c393d3eb843fcbd056e1a9c"
+      "Hash": "7f36453cfeacb1c6ad08b7c268997a13"
     },
     "openssl": {
       "Package": "openssl",
