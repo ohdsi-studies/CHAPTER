@@ -1371,11 +1371,7 @@
     "CriteriaList": [
       {
         "ConditionOccurrence": {
-          "CodesetId": 0,
-          "OccurrenceStartDate": {
-            "Value": "2025-01-01",
-            "Op": "lt"
-          }
+          "CodesetId": 0
         }
       }
     ],
@@ -1393,40 +1389,7 @@
   "ExpressionLimit": {
     "Type": "All"
   },
-  "InclusionRules": [
-    {
-      "name": "90days",
-      "expression": {
-        "Type": "ALL",
-        "CriteriaList": [
-          {
-            "Criteria": {
-              "ConditionOccurrence": {
-                "CodesetId": 0
-              }
-            },
-            "StartWindow": {
-              "Start": {
-                "Days": 90,
-                "Coeff": -1
-              },
-              "End": {
-                "Days": 1,
-                "Coeff": -1
-              },
-              "UseEventEnd": false
-            },
-            "Occurrence": {
-              "Type": 0,
-              "Count": 0
-            }
-          }
-        ],
-        "DemographicCriteriaList": [],
-        "Groups": []
-      }
-    }
-  ],
+  "InclusionRules": [],
   "EndStrategy": {
     "DateOffset": {
       "DateField": "StartDate",

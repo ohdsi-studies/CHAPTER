@@ -150,7 +150,7 @@ getIncidenceResults <- function(cdm,
   # Same but now time at risk 365 days
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
-      cohort_end_date - cohort_start_date > 365,
+      difftime(cohort_end_date, cohort_start_date, units = "days") > 365,
       clock::add_days(.data$cohort_start_date,365L),
       cohort_end_date)) %>% 
     dplyr::compute()
@@ -189,7 +189,7 @@ getIncidenceResults <- function(cdm,
   # Same but now time at risk 30 days
   cdm[["acute_cohorts"]] <- cdm[["acute_cohorts"]] %>%
     dplyr::mutate(cohort_end_date = dplyr::if_else(
-      cohort_end_date - cohort_start_date > 30,
+      difftime(cohort_end_date, cohort_start_date, units = "days") > 30,
       clock::add_days(.data$cohort_start_date,30L),
       cohort_end_date)) %>% 
     dplyr::compute()

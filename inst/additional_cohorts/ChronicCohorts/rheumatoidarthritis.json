@@ -1092,11 +1092,7 @@
     "CriteriaList": [
       {
         "ConditionOccurrence": {
-          "CodesetId": 0,
-          "Age": {
-            "Value": 18,
-            "Op": "gt"
-          }
+          "CodesetId": 0
         }
       }
     ],

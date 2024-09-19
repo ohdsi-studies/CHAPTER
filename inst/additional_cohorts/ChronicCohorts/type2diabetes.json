@@ -212,22 +212,6 @@
   },
   "InclusionRules": [
     {
-      "name": "After 2020",
-      "expression": {
-        "Type": "ALL",
-        "CriteriaList": [],
-        "DemographicCriteriaList": [
-          {
-            "OccurrenceStartDate": {
-              "Value": "2020-01-01",
-              "Op": "gte"
-            }
-          }
-        ],
-        "Groups": []
-      }
-    },
-    {
       "name": "No previous diagnosis",
       "expression": {
         "Type": "ALL",
