@@ -32,9 +32,16 @@ databaseDescription <- "Medicare Claims Synthetic Public Use Files (SynPUFs) wer
 # For some database platforms (e.g. Oracle): define a schema that can be used to emulate temp tables:
 options(sqlRenderTempEmulationSchema = NULL)
 
-CHAPTER::executeIncidencePrevalence(
-  outputFolder  = "/Users/chan/data/chatper_try",
-  databaseId = "Yonsei"
+CHAPTER::execute(
+        connectionDetails = connectionDetails,
+        cdmDatabaseSchema = cdmDatabaseSchema,
+        cohortDatabaseSchema = cohortDatabaseSchema,
+        cohortTable = cohortTable,
+        verifyDependencies = TRUE,
+        outputFolder = outputFolder,
+        databaseId = databaseId,
+        databaseName = databaseName,
+        databaseDescription = databaseDescription
 )
 
 CohortDiagnostics::preMergeDiagnosticsFiles(dataFolder = outputFolder)
